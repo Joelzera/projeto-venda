@@ -52,7 +52,9 @@
             <input type="text" class="form-control" id="nome-produto" v-model="formProducts.name" />
 
             <label for="marca" class="form-label mt-2">Marca</label>
-            <select class="form-select" id="marca" v-model="formProducts.mark"></select>
+            <select class="form-select" id="marca" v-model="formProducts.mark">
+              <option> nike</option>
+            </select>
 
             <label for="descricao" class="form-label mt-2">Descrição</label>
             <input type="text" class="form-control" id="descricao" v-model="formProducts.description"/>
@@ -95,12 +97,16 @@
             <h5 class="card-title">Venda</h5>
 
             <label for="venda-cliente" class="form-label">Cliente</label>
-            <select class="form-select" id="venda-cliente" v-model="formSale.costumer"></select>
+            <select class="form-select" id="venda-cliente" v-model="formSale.customer">
+              <option>joel</option>
+            </select>
             
             <div class="row">
               <div class="col-md-4">
                 <label for="venda-produto" class="form-label mt-2">Produto</label>
-                <select class="form-select" id="venda-produto" v-model="formSale.product"></select>
+                <select class="form-select" id="venda-produto" v-model="formSale.product">
+                  <option>caneta</option>
+                </select>
               </div>
               <div class="col-md-4">
                 <label for="quantidade" class="form-label mt-2">Quantidade</label>
@@ -161,11 +167,26 @@ export default {
           console.error('Erro ao cadastrar cliente:', error);
         });
       } else if(tipo === 'produto'){
-        console.log('Dados dos Produtos', this.formProducts)
+        axios.post('http://127.0.0.1:8000/api/produtos', this.formProducts)
+        .then(response => 
+        {console.log('Produto Cadastrado:', response.data)})
+        .catch(error => {
+          console.error('Erro ao cadastrar cliente:', error);
+        });
       } else if(tipo === "marca"){
-        console.log("Marca", this.formBrands)
+        axios.post('http://127.0.0.1:8000/api/marcas', this.formBrands)
+        .then(response => 
+        {console.log('Marca Cadastrada:', response.data)})
+        .catch(error => {
+          console.error('Erro ao cadastrar cliente:', error);
+        });
       } else if(tipo === "venda"){
-        console.log("Dados da venda",  this.formSale)
+        axios.post('http://127.0.0.1:8000/api/vendas', this.formSale)
+        .then(response => 
+        {console.log('Produto de Venda registrado:', response.data)})
+        .catch(error => {
+          console.error('Erro ao cadastrar cliente:', error);
+        });
       }
     }
   }
