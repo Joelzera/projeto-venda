@@ -25,4 +25,9 @@ class SaleController extends Controller
 
         return response()->json($sales, 201);
     }
+
+    public function index()
+    {
+        return response()->json(Sale::all());
+    }
 }

@@ -19,4 +19,11 @@ class BrandController extends Controller
 
         return response()->json($brands, 201);
     }
+    
+    public function index()
+    {
+        // retorna todas as marcas
+        return response()->json(Brand::all());
+    }
+    
 }
