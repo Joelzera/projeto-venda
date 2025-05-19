@@ -1,5 +1,4 @@
 <template>
-  
     <div
       style="
         display: flex;
@@ -154,8 +153,13 @@ export default {
   },
   methods: {
     enviarFormulario(tipo) {
-      if(tipo === 'cliente'){
-        console.log('Dados dos Clientes', this.formCostumer)
+      if(tipo === 'cliente'){    
+        axios.post('http://127.0.0.1:8000/api/clientes', this.formCostumer)
+        .then(response => 
+        {console.log('Cliente Cadastrado:', response.data)})
+        .catch(error => {
+          console.error('Erro ao cadastrar cliente:', error);
+        });
       } else if(tipo === 'produto'){
         console.log('Dados dos Produtos', this.formProducts)
       } else if(tipo === "marca"){
