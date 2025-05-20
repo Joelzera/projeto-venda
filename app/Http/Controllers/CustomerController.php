@@ -43,4 +43,13 @@ class CustomerController extends Controller
 
         return response()->json(['message' => 'Cliente deletado com sucesso'], 200);
     }
+
+    public function update(Request $request, $id)
+    {
+        $cliente = Customer::findOrFail($id);
+
+        $cliente->update($request->all());
+
+        return response()->json($cliente);
+    }
 }

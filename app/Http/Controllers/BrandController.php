@@ -38,5 +38,12 @@ class BrandController extends Controller
 
         return response()->json(['message' => 'marca deletado com sucesso'], 200);
     }
+
+     public function update(Request $request, $id)
+    {
+        $brand = Brand::findOrFail($id);
+        $brand->update($request->all());
+        return response()->json($brand, 200);
+    }
     
 }
