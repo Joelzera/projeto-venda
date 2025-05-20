@@ -12,7 +12,7 @@ class CustomerController extends Controller
         $request->validate([
             "name" => "required|string|max:100",
             "cpf" => "required|string|max:14",
-            "telefone" => "required|string|max:14",
+            "telefone" => "required|string|max:18",
             "email" => "required|string|max:100"
         ]);
 
@@ -30,4 +30,5 @@ class CustomerController extends Controller
     {
         return response()->json(Customer::all());
     }
+    
 }

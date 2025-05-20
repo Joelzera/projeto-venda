@@ -180,7 +180,11 @@
               id="venda-cliente"
               v-model="formSale.customer"
             >
-              <option v-for="customer in customers" :key="customer.id" :value="customer.id">
+              <option
+                v-for="customer in customers"
+                :key="customer.id"
+                :value="customer.id"
+              >
                 {{ customer.name }}
               </option>
             </select>
@@ -195,9 +199,13 @@
                   id="venda-produto"
                   v-model="formSale.product"
                 >
-                <option v-for="product in products" :key="product.id" :value="product.id">
-                {{ product.name }}
-              </option>
+                  <option
+                    v-for="product in products"
+                    :key="product.id"
+                    :value="product.id"
+                  >
+                    {{ product.name }}
+                  </option>
                 </select>
               </div>
               <div class="col-md-4">
@@ -318,27 +326,27 @@ export default {
         console.error("Erro ao carregar vendas:", err);
       });
   },
-    computed: {
+  computed: {
     // retorna o objeto do produto selecionado (ou null)
     selectedProduct() {
-      return this.products.find(p => p.id === this.formSale.product) || null;
+      return this.products.find((p) => p.id === this.formSale.product) || null;
     },
     // calcula automaticamente o total
     calculatedTotal() {
       if (!this.selectedProduct) return 0;
       // multiplica qty pelo valor unitário
       return (this.selectedProduct.value * this.formSale.qty).toFixed(2);
-    }
+    },
   },
 
   watch: {
     // sempre que mudar produto ou qty, atualiza formSale.total
-    'formSale.product'() {
+    "formSale.product"() {
       this.formSale.total = this.calculatedTotal;
     },
-    'formSale.qty'() {
+    "formSale.qty"() {
       this.formSale.total = this.calculatedTotal;
-    }
+    },
   },
 
   methods: {
@@ -355,14 +363,22 @@ export default {
             console.error("Erro ao cadastrar cliente:", error);
           });
       } else if (tipo === "produto") {
+        // Encontra o nome da marca pelo id selecionado
+        const marcaSelecionada = this.brands.find(
+          (b) => b.id === this.formProducts.mark
+        );
+        const payload = {
+          ...this.formProducts,
+          mark: marcaSelecionada ? marcaSelecionada.name : "",
+        };
         axios
-          .post("http://127.0.0.1:8000/api/produtos", this.formProducts)
+          .post("http://127.0.0.1:8000/api/produtos", payload)
           .then((response) => {
             console.log("Produto Cadastrado:", response.data);
             this.products.push(response.data);
           })
           .catch((error) => {
-            console.error("Erro ao cadastrar cliente:", error);
+            console.error("Erro ao cadastrar produto:", error);
           });
       } else if (tipo === "marca") {
         axios
