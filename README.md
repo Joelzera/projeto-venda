@@ -8,7 +8,6 @@
 - MySQL
 
 ## Como rodar o projeto
-abra dois terminal
 no arquivo .env configure o banco de dados
 
 
