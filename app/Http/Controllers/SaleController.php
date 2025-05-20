@@ -10,10 +10,10 @@ class SaleController extends Controller
      public function store(Request $request)
     {
         $request->validate([
-            "customer" => "required|string",
-            "product" => "required|string",
-            "qty" => "required|integer",
-            "total" => "required|numeric"
+            "customer" => "required|integer|exists:customers,id",
+            "product" => "required|integer|exists:products,id",
+            "qty" => "required|integer|min:1",
+            "total" => "required|numeric|min:0",
         ]);
 
         $sales = Sale::create([

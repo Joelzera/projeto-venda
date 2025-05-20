@@ -17,3 +17,6 @@ Route::post('/clientes', [CustomerController::class, 'store']);
 Route::post('/produtos', [ProductController::class, 'store']);
 Route::post('/marcas', [BrandController::class, 'store']);
 Route::post('/vendas', [SaleController::class, 'store']);
+
+
+
