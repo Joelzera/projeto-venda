@@ -30,4 +30,17 @@ class ProductController extends Controller
     {
         return response()->json(Product::all());
     }
+
+        public function destroy($id)
+    {
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'produto não encontrado'], 404);
+        }
+
+        $product->delete();
+
+        return response()->json(['message' => 'produto deletado com sucesso'], 200);
+    }
 }
