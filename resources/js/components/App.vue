@@ -13,7 +13,7 @@
     <div style="display: flex; flex-direction: column; gap: 2rem">
       <!-- Cadastro do Cliente -->
       <form class="row g-3" @submit.prevent="enviarFormulario('cliente')">
-        <div class="card" style="width: 20rem">
+        <div class="card" style="width: 40rem">
           <div class="card-body">
             <h5 class="card-title">Cadastro do Cliente</h5>
 
@@ -70,13 +70,40 @@
                 Limpar
               </button>
             </div>
+
+            <!-- ⬇ Tabela dentro do card-body com rolagem horizontal opcional -->
+            <div style="overflow-x: auto; margin-top: 1rem">
+              <table
+                class="table table-bordered"
+                style="width: 100%; box-sizing: border-box"
+              >
+                <thead class="table-light">
+                  <tr>
+                    <td>Nome</td>
+                    <td>CPF/CNPJ</td>
+                    <td>Telefone</td>
+                    <td>Email</td>
+                    <td>Ações</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="customer in customers" :key="customer.id">
+                    <td>{{ customer.name }}</td>
+                    <td>{{ customer.cpf }}</td>
+                    <td>{{ customer.telefone }}</td>
+                    <td>{{ customer.email }}</td>
+                    <td><button>Editar</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </form>
 
       <!-- Cadastro de Produtos -->
       <form @submit.prevent="enviarFormulario('produto')">
-        <div class="card" style="width: 20rem">
+        <div class="card" style="width: 40rem">
           <div class="card-body">
             <h5 class="card-title">Cadastro de Produtos</h5>
 
@@ -127,6 +154,31 @@
                 Limpar
               </button>
             </div>
+            <div style="overflow-x: auto; margin-top: 1rem">
+              <table
+                class="table table-bordered"
+                style="width: 100%; box-sizing: border-box"
+              >
+                <thead class="table-light">
+                  <tr>
+                    <td>Produto</td>
+                    <td>Marca</td>
+                    <td>Descrição</td>
+                    <td>Valor</td>
+                    <td>Ações</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="produto in products" :key="produto.id">
+                    <td>{{ produto.name }}</td>
+                    <td>{{ produto.mark }}</td>
+                    <td>{{ produto.description }}</td>
+                    <td>R$ {{ produto.value }}</td>
+                    <td><button>Editar</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </form>
@@ -163,6 +215,25 @@
               >
                 Limpar
               </button>
+            </div>
+            <div style="overflow-x: auto; margin-top: 1rem">
+              <table
+                class="table table-bordered"
+                style="width: 100%; box-sizing: border-box"
+              >
+                <thead class="table-light">
+                  <tr>
+                    <td>Marca</td>
+                    <td>Ações</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="brand in brands" :key="brand.id">
+                    <td>{{ brand.name }}</td>
+                    <td><button>Editar</button></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -240,6 +311,30 @@
             >
               Adicionar Produto
             </button>
+            <div style="overflow-x: auto; margin-top: 1rem">
+              <table
+                class="table table-bordered"
+                style="width: 100%; box-sizing: border-box"
+              >
+                <thead class="table-light">
+                  <tr>
+                    <td>Cliente</td>
+                    <td>Produto</td>
+                    <td>Quantidade</td>
+                    <td>Total</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td v-for="customer in customers" :key="customer.id">{{ customer.name}}</td>
+                    <td v-for="product in products" :key="product.id">{{ product.name }}</td>
+                    <td v-for="sale in sales" :key="sale.id">{{ sale.qty }}</td>
+                    <td v-for="sale in sales" :key="sale.id">{{ sale.total}}</td>
+                    
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
             <div class="mt-3 d-flex justify-content-between">
               <button
