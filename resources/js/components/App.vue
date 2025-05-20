@@ -62,13 +62,6 @@
               >
                 Salvar
               </button>
-              <button
-                type="reset"
-                style="width: 140px"
-                class="btn btn-secondary"
-              >
-                Limpar
-              </button>
             </div>
 
             <!-- ⬇ Tabela dentro do card-body com rolagem horizontal opcional -->
@@ -92,7 +85,15 @@
                     <td>{{ customer.cpf }}</td>
                     <td>{{ customer.telefone }}</td>
                     <td>{{ customer.email }}</td>
-                    <td><button>Editar</button></td>
+                    <td>
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm"
+                        @click="deletarCliente(customer.id)"
+                      >
+                        Excluir
+                      </button>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -325,12 +326,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td v-for="customer in customers" :key="customer.id">{{ customer.name}}</td>
-                    <td v-for="product in products" :key="product.id">{{ product.name }}</td>
-                    <td v-for="sale in sales" :key="sale.id">{{ sale.qty }}</td>
-                    <td v-for="sale in sales" :key="sale.id">{{ sale.total}}</td>
-                    
+                  <tr v-for="sale in sales" :key="sale.id">
+                    <td>{{ sale.customer }}</td>
+                    <td>{{ sale.product }}</td>
+                    <td>{{ sale.qty }}</td>
+                    <td>{{ sale.total }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -497,6 +497,18 @@ export default {
           });
       }
     },
+    deletarCliente(id) {
+  axios
+    .delete(`http://127.0.0.1:8000/api/clientes/deletar/${id}`)
+    .then((res) => {
+      console.log("Deletado com sucesso", res);
+      // Remove o cliente da lista local
+      this.customers = this.customers.filter((c) => c.id !== id);
+    })
+    .catch((err) => {
+      console.error("Erro ao deletar:", err);
+    });
+}
   },
 };
 </script>
