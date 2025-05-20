@@ -147,13 +147,6 @@
               >
                 Salvar
               </button>
-              <button
-                type="reset"
-                class="btn btn-secondary"
-                style="width: 140px"
-              >
-                Limpar
-              </button>
             </div>
             <div style="overflow-x: auto; margin-top: 1rem">
               <table
@@ -170,12 +163,20 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="produto in products" :key="produto.id">
-                    <td>{{ produto.name }}</td>
-                    <td>{{ produto.mark }}</td>
-                    <td>{{ produto.description }}</td>
-                    <td>R$ {{ produto.value }}</td>
-                    <td><button>Editar</button></td>
+                  <tr v-for="product in products" :key="product.id">
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.mark }}</td>
+                    <td>{{ product.description }}</td>
+                    <td>R$ {{ product.value }}</td>
+                    <td>
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm"
+                        @click="deletarProduto(product.id)"
+                      >
+                        Excluir
+                      </button>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -209,13 +210,6 @@
               >
                 Salvar
               </button>
-              <button
-                type="reset"
-                class="btn btn-secondary"
-                style="width: 140px"
-              >
-                Limpar
-              </button>
             </div>
             <div style="overflow-x: auto; margin-top: 1rem">
               <table
@@ -231,7 +225,15 @@
                 <tbody>
                   <tr v-for="brand in brands" :key="brand.id">
                     <td>{{ brand.name }}</td>
-                    <td><button>Editar</button></td>
+                    <td>
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm"
+                        @click="deletarMarca(brand.id)"
+                      >
+                        Excluir
+                      </button>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -421,6 +423,7 @@ export default {
         console.error("Erro ao carregar vendas:", err);
       });
   },
+
   computed: {
     // retorna o objeto do produto selecionado (ou null)
     selectedProduct() {
@@ -452,8 +455,13 @@ export default {
           .then((response) => {
             console.log("Cliente Cadastrado:", response.data);
             this.customers.push(response.data);
+            this.formCostumer = {
+              name: "",
+              cpf: "",
+              telefone: "",
+              email: "",
+            };
           })
-
           .catch((error) => {
             console.error("Erro ao cadastrar cliente:", error);
           });
@@ -471,6 +479,12 @@ export default {
           .then((response) => {
             console.log("Produto Cadastrado:", response.data);
             this.products.push(response.data);
+            this.formProducts = {
+              name: "",
+              mark: "",
+              description: "",
+              value: "",
+            };
           })
           .catch((error) => {
             console.error("Erro ao cadastrar produto:", error);
@@ -481,6 +495,9 @@ export default {
           .then((response) => {
             console.log("Marca Cadastrada:", response.data);
             this.brands.push(response.data);
+            this.formBrands = {
+              name: "",
+            };
           })
           .catch((error) => {
             console.error("Erro ao cadastrar marca:", error);
@@ -491,24 +508,54 @@ export default {
           .then((response) => {
             console.log("Produto de Venda registrado:", response.data);
             this.sales.push(response.data);
+            this.formSale = {
+              customer: "",
+              product: "",
+              qty: "",
+              total: 0,
+            };
           })
           .catch((error) => {
             console.error("Erro ao cadastrar cliente:", error);
           });
       }
     },
+
     deletarCliente(id) {
-  axios
-    .delete(`http://127.0.0.1:8000/api/clientes/deletar/${id}`)
-    .then((res) => {
-      console.log("Deletado com sucesso", res);
-      // Remove o cliente da lista local
-      this.customers = this.customers.filter((c) => c.id !== id);
-    })
-    .catch((err) => {
-      console.error("Erro ao deletar:", err);
-    });
-}
+      axios
+        .delete(`http://127.0.0.1:8000/api/clientes/deletar/${id}`)
+        .then((res) => {
+          console.log("Deletado com sucesso", res);
+          this.customers = this.customers.filter((c) => c.id !== id);
+        })
+        .catch((err) => {
+          console.error("Erro ao deletar:", err);
+        });
+    },
+
+    deletarProduto(id) {
+      axios
+        .delete(`http://127.0.0.1:8000/api/produtos/deletar/${id}`)
+        .then((res) => {
+          console.log("Deletado com sucesso", res);
+          this.products = this.products.filter((p) => p.id !== id);
+        })
+        .catch((err) => {
+          console.error("Erro ao deletar:", err);
+        });
+    },
+
+    deletarMarca(id) {
+      axios
+        .delete(`http://127.0.0.1:8000/api/marcas/deletar/${id}`)
+        .then((res) => {
+          console.log("Deletado com sucesso", res);
+          this.brands = this.brands.filter((b) => b.id !== id);
+        })
+        .catch((err) => {
+          console.error("Erro ao deletar:", err);
+        });
+    },
   },
 };
 </script>

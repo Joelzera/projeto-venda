@@ -25,5 +25,18 @@ class BrandController extends Controller
         // retorna todas as marcas
         return response()->json(Brand::all());
     }
+
+        public function destroy($id)
+    {
+        $brand = Brand::find($id);
+
+        if (!$brand) {
+            return response()->json(['message' => 'marca não encontrado'], 404);
+        }
+
+        $brand->delete();
+
+        return response()->json(['message' => 'marca deletado com sucesso'], 200);
+    }
     
 }

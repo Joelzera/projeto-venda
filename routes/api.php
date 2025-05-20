@@ -19,7 +19,7 @@ Route::post('/marcas', [BrandController::class, 'store']);
 Route::post('/vendas', [SaleController::class, 'store']);
 
 Route::delete('/clientes/deletar/{id}', [CustomerController::class, 'destroy']);
-Route::delete('/produtos/{id}', [ProductController::class, 'destroy']);
-Route::delete('/marcas/{id}', [BrandController::class, 'destroy']);
-Route::delete('/vendas/{id}', [SaleController::class, 'destroy']);
+Route::delete('/produtos/deletar/{id}', [ProductController::class, 'destroy']);
+Route::delete('/marcas/deletar/{id}', [BrandController::class, 'destroy']);
+
 
