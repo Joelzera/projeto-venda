@@ -178,14 +178,14 @@
                     <td>
                       <button
                         type="button"
-                        class="btn btn-warning btn-sm me-2"
+                        class="btn btn-warning btn-sm me-1"
                         @click="editarProduto(product)"
                       >
                         Editar
                       </button>
                       <button
                         type="button"
-                        class="btn btn-danger btn-sm"
+                        class="btn btn-danger btn-sm "
                         @click="deletarProduto(product.id)"
                       >
                         Excluir
