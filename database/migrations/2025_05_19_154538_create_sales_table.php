@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sales', function (Blueprint $table) {
-            $table->id();
-            $table->string('customer', 100);
-            $table->string('product', 100);
-            $table->integer('qty');
-            $table->decimal('total', 10, 2);
-            $table->timestamps();
-        });
+   Schema::create('sales', function (Blueprint $table) {
+    $table->id();
+    $table->unsignedBigInteger('customer');
+    $table->decimal('total', 10, 2)->default(0); // <- total da venda
+    $table->timestamps();
+});
     }
-
     /**
      * Reverse the migrations.
      */

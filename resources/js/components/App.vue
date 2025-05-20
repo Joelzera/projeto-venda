@@ -88,6 +88,13 @@
                     <td>
                       <button
                         type="button"
+                        class="btn btn-warning btn-sm mb-2"
+                        @click="editarCliente(customer)"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
                         class="btn btn-danger btn-sm"
                         @click="deletarCliente(customer.id)"
                       >
@@ -171,6 +178,13 @@
                     <td>
                       <button
                         type="button"
+                        class="btn btn-warning btn-sm me-2"
+                        @click="editarProduto(product)"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
                         class="btn btn-danger btn-sm"
                         @click="deletarProduto(product.id)"
                       >
@@ -226,6 +240,13 @@
                   <tr v-for="brand in brands" :key="brand.id">
                     <td>{{ brand.name }}</td>
                     <td>
+                      <button
+                        type="button"
+                        class="btn btn-warning btn-sm me-2"
+                        @click="editarMarca(brand)"
+                      >
+                        Editar
+                      </button>
                       <button
                         type="button"
                         class="btn btn-danger btn-sm"
@@ -308,9 +329,10 @@
             </div>
 
             <button
-              type="submit"
+              type="button"
               class="btn btn-primary mt-3"
               style="width: 285px"
+              @click="adicionarItemVenda"
             >
               Adicionar Produto
             </button>
@@ -321,18 +343,33 @@
               >
                 <thead class="table-light">
                   <tr>
-                    <td>Cliente</td>
                     <td>Produto</td>
                     <td>Quantidade</td>
                     <td>Total</td>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="sale in sales" :key="sale.id">
-                    <td>{{ sale.customer }}</td>
-                    <td>{{ sale.product }}</td>
-                    <td>{{ sale.qty }}</td>
-                    <td>{{ sale.total }}</td>
+                  <tr v-for="(item, index) in itensVenda" :key="index">
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>{{ item.total }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <table
+                class="table table-bordered"
+                style="width: 100%; box-sizing: border-box"
+              >
+                <thead class="table-light">
+                  <tr>
+                    <td>Valor total</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <strong>R$ {{ totalGeralVenda }}</strong>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -341,7 +378,7 @@
             <div class="mt-3 d-flex justify-content-between">
               <button
                 type="submit"
-                class="btn btn-primary"
+                class="btn btn-success"
                 style="width: 500px"
               >
                 Finalizar Venda
@@ -383,6 +420,12 @@ export default {
       customers: [],
       products: [],
       sales: [],
+
+      itensVenda: [],
+
+      clienteEmEdicao: null,
+      ProdutoEmEdicao: null,
+      MarcaEmEdicao: null,
     };
   },
 
@@ -435,6 +478,15 @@ export default {
       // multiplica qty pelo valor unitário
       return (this.selectedProduct.value * this.formSale.qty).toFixed(2);
     },
+
+    totalGeralVenda() {
+      return this.itensVenda
+        .reduce((total, item) => {
+          const valor = parseFloat(item.total) || 0;
+          return total + valor;
+        }, 0)
+        .toFixed(2);
+    },
   },
 
   watch: {
@@ -450,75 +502,196 @@ export default {
   methods: {
     enviarFormulario(tipo) {
       if (tipo === "cliente") {
-        axios
-          .post("http://127.0.0.1:8000/api/clientes", this.formCostumer)
-          .then((response) => {
-            console.log("Cliente Cadastrado:", response.data);
-            this.customers.push(response.data);
-            this.formCostumer = {
-              name: "",
-              cpf: "",
-              telefone: "",
-              email: "",
-            };
-          })
-          .catch((error) => {
-            console.error("Erro ao cadastrar cliente:", error);
-          });
+        if (this.clienteEmEdicao) {
+          // Atualização
+          axios
+            .put(
+              `http://127.0.0.1:8000/api/clientes/atualizar/${this.clienteEmEdicao.id}`,
+              this.formCostumer
+            )
+            .then((res) => {
+              const index = this.customers.findIndex(
+                (c) => c.id === this.clienteEmEdicao.id
+              );
+              if (index !== -1) {
+                this.customers[index] = res.data;
+              }
+              this.clienteEmEdicao = null;
+              this.formCostumer = {
+                name: "",
+                cpf: "",
+                telefone: "",
+                email: "",
+              };
+            })
+            .catch((err) => {
+              console.error("Erro ao atualizar cliente:", err);
+            });
+        } else {
+          // Criação
+          axios
+            .post("http://127.0.0.1:8000/api/clientes", this.formCostumer)
+            .then((response) => {
+              this.customers.push(response.data);
+              this.formCostumer = {
+                name: "",
+                cpf: "",
+                telefone: "",
+                email: "",
+              };
+            })
+            .catch((error) => {
+              console.error("Erro ao cadastrar cliente:", error);
+            });
+        }
       } else if (tipo === "produto") {
         // Encontra o nome da marca pelo id selecionado
         const marcaSelecionada = this.brands.find(
           (b) => b.id === this.formProducts.mark
         );
+
         const payload = {
           ...this.formProducts,
           mark: marcaSelecionada ? marcaSelecionada.name : "",
         };
-        axios
-          .post("http://127.0.0.1:8000/api/produtos", payload)
-          .then((response) => {
-            console.log("Produto Cadastrado:", response.data);
-            this.products.push(response.data);
-            this.formProducts = {
-              name: "",
-              mark: "",
-              description: "",
-              value: "",
-            };
-          })
-          .catch((error) => {
-            console.error("Erro ao cadastrar produto:", error);
-          });
+
+        if (this.ProdutoEmEdicao) {
+          // Atualizar produto
+          axios
+            .put(
+              `http://127.0.0.1:8000/api/produtos/atualizar/${this.ProdutoEmEdicao.id}`,
+              payload
+            )
+            .then((res) => {
+              const index = this.products.findIndex(
+                (p) => p.id === this.ProdutoEmEdicao.id
+              );
+              if (index !== -1) {
+                this.products[index] = res.data;
+              }
+              this.ProdutoEmEdicao = null;
+              this.formProducts = {
+                name: "",
+                mark: "",
+                description: "",
+                value: "",
+              };
+            })
+            .catch((err) => {
+              console.error("Erro ao atualizar produto:", err);
+            });
+        } else {
+          // Cadastrar novo produto
+          axios
+            .post("http://127.0.0.1:8000/api/produtos", payload)
+            .then((response) => {
+              console.log("Produto Cadastrado:", response.data);
+              this.products.push(response.data);
+              this.formProducts = {
+                name: "",
+                mark: "",
+                description: "",
+                value: "",
+              };
+            })
+            .catch((error) => {
+              console.error("Erro ao cadastrar produto:", error);
+            });
+        }
       } else if (tipo === "marca") {
-        axios
-          .post("http://127.0.0.1:8000/api/marcas", this.formBrands)
-          .then((response) => {
-            console.log("Marca Cadastrada:", response.data);
-            this.brands.push(response.data);
-            this.formBrands = {
-              name: "",
-            };
-          })
-          .catch((error) => {
-            console.error("Erro ao cadastrar marca:", error);
-          });
+        if (this.MarcaEmEdicao) {
+          // Atualizar marca existente
+          axios
+            .put(
+              `http://127.0.0.1:8000/api/marcas/atualizar/${this.MarcaEmEdicao.id}`,
+              this.formBrands
+            )
+            .then((res) => {
+              const index = this.brands.findIndex(
+                (b) => b.id === this.MarcaEmEdicao.id
+              );
+              if (index !== -1) {
+                this.brands[index] = res.data;
+              }
+              this.MarcaEmEdicao = null;
+              this.formBrands = { name: "" };
+            })
+            .catch((err) => {
+              console.error("Erro ao atualizar marca:", err);
+            });
+        } else {
+          // Criar nova marca
+          axios
+            .post("http://127.0.0.1:8000/api/marcas", this.formBrands)
+            .then((response) => {
+              console.log("Marca Cadastrada:", response.data);
+              this.brands.push(response.data);
+              this.formBrands = { name: "" };
+            })
+            .catch((error) => {
+              console.error("Erro ao cadastrar marca:", error);
+            });
+        }
       } else if (tipo === "venda") {
+        if (!this.formSale.customer || this.itensVenda.length === 0) return;
+
+        const payload = {
+          customer: this.formSale.customer,
+          items: this.itensVenda.map((item) => ({
+            product_id: item.product_id,
+            qty: item.qty,
+            total: item.total,
+          })),
+        };
+
         axios
-          .post("http://127.0.0.1:8000/api/vendas", this.formSale)
+          .post("http://127.0.0.1:8000/api/vendas", payload)
           .then((response) => {
-            console.log("Produto de Venda registrado:", response.data);
+            console.log("Venda finalizada:", response.data);
             this.sales.push(response.data);
-            this.formSale = {
-              customer: "",
-              product: "",
-              qty: "",
-              total: 0,
-            };
+            this.formSale.customer = "";
+            this.itensVenda = [];
           })
           .catch((error) => {
-            console.error("Erro ao cadastrar cliente:", error);
+            console.error("Erro ao finalizar venda:", error);
           });
       }
+    },
+    adicionarItemVenda() {
+      if (!this.formSale.product || !this.formSale.qty) return;
+
+      const produto = this.products.find((p) => p.id === this.formSale.product);
+      if (!produto) return;
+
+      this.itensVenda.push({
+        product_id: produto.id,
+        name: produto.name,
+        qty: this.formSale.qty,
+        total: this.calculatedTotal,
+      });
+
+      // limpa os campos de produto
+      this.formSale.product = "";
+      this.formSale.qty = "";
+      this.formSale.total = 0;
+    },
+
+    editarCliente(cliente) {
+      this.formCostumer = { ...cliente };
+      this.clienteEmEdicao = cliente;
+    },
+    editarProduto(produto) {
+      // Transforma mark de nome para id, se necessário
+      const marca = this.brands.find((b) => b.name === produto.mark);
+      this.formProducts = {
+        ...produto,
+        mark: marca ? marca.id : "", // para preencher o <select>
+      };
+      this.ProdutoEmEdicao = produto;
+    },
+    editarMarca(marca) {
+      this.formBrands = { ...marca };
+      this.MarcaEmEdicao = marca;
     },
 
     deletarCliente(id) {
