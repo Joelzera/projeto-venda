@@ -31,4 +31,16 @@ class CustomerController extends Controller
         return response()->json(Customer::all());
     }
     
+    public function destroy($id)
+    {
+        $customer = Customer::find($id);
+
+        if (!$customer) {
+            return response()->json(['message' => 'Cliente não encontrado'], 404);
+        }
+
+        $customer->delete();
+
+        return response()->json(['message' => 'Cliente deletado com sucesso'], 200);
+    }
 }
