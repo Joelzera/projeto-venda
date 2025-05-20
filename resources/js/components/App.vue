@@ -393,6 +393,7 @@
 
 <script>
 export default {
+   //Função principal, define os dados (estado) do componente
   data() {
     return {
       formCostumer: {
@@ -420,9 +421,11 @@ export default {
       customers: [],
       products: [],
       sales: [],
-
+      
+      // Lista temporária de itens da venda atual (antes de salvar)
       itensVenda: [],
 
+      // Listas que armazenam os dados vindos da API
       clienteEmEdicao: null,
       ProdutoEmEdicao: null,
       MarcaEmEdicao: null,
@@ -430,12 +433,15 @@ export default {
   },
 
   mounted() {
+      // Faz uma requisição GET para buscar todas as marcas cadastradas no banco
     axios
       .get("http://127.0.0.1:8000/api/marcas")
       .then((res) => {
+         // Se a requisição for bem-sucedida, armazena os dados na propriedade brands
         this.brands = res.data;
       })
       .catch((err) => {
+         // Caso ocorra um erro, exibe no console
         console.error("Erro ao carregar marcas:", err);
       });
 
@@ -500,22 +506,26 @@ export default {
   },
 
   methods: {
+    // Função principal para envio de formulários, baseada no tipo de entidade
     enviarFormulario(tipo) {
+       // Se for cliente
       if (tipo === "cliente") {
         if (this.clienteEmEdicao) {
-          // Atualização
+          // Requisição PUT para atualizar o cliente
           axios
             .put(
               `http://127.0.0.1:8000/api/clientes/atualizar/${this.clienteEmEdicao.id}`,
               this.formCostumer
             )
             .then((res) => {
+              // Atualiza o cliente na lista local
               const index = this.customers.findIndex(
                 (c) => c.id === this.clienteEmEdicao.id
               );
               if (index !== -1) {
                 this.customers[index] = res.data;
               }
+              // Limpa os dados do formulário e o estado de edição
               this.clienteEmEdicao = null;
               this.formCostumer = {
                 name: "",
@@ -528,12 +538,12 @@ export default {
               console.error("Erro ao atualizar cliente:", err);
             });
         } else {
-          // Criação
+          // Criação de novo cliente
           axios
             .post("http://127.0.0.1:8000/api/clientes", this.formCostumer)
             .then((response) => {
-              this.customers.push(response.data);
-              this.formCostumer = {
+              this.customers.push(response.data); // Adiciona à lista
+              this.formCostumer = { // Limpa o formulário
                 name: "",
                 cpf: "",
                 telefone: "",
@@ -549,7 +559,7 @@ export default {
         const marcaSelecionada = this.brands.find(
           (b) => b.id === this.formProducts.mark
         );
-
+          // Prepara os dados do produto com o nome da marca
         const payload = {
           ...this.formProducts,
           mark: marcaSelecionada ? marcaSelecionada.name : "",
@@ -633,8 +643,10 @@ export default {
             });
         }
       } else if (tipo === "venda") {
+         // Validações mínimas
         if (!this.formSale.customer || this.itensVenda.length === 0) return;
 
+         // Monta o payload com os dados da venda
         const payload = {
           customer: this.formSale.customer,
           items: this.itensVenda.map((item) => ({
@@ -657,6 +669,7 @@ export default {
           });
       }
     },
+    // Adiciona um item à lista de itens da venda atual
     adicionarItemVenda() {
       if (!this.formSale.product || !this.formSale.qty) return;
 
@@ -667,7 +680,7 @@ export default {
         product_id: produto.id,
         name: produto.name,
         qty: this.formSale.qty,
-        total: this.calculatedTotal,
+        total: this.calculatedTotal, // valor calculado com base no produto e quantidade
       });
 
       // limpa os campos de produto
@@ -675,7 +688,7 @@ export default {
       this.formSale.qty = "";
       this.formSale.total = 0;
     },
-
+     // Carrega os dados do cliente no formulário para edição
     editarCliente(cliente) {
       this.formCostumer = { ...cliente };
       this.clienteEmEdicao = cliente;
@@ -693,7 +706,7 @@ export default {
       this.formBrands = { ...marca };
       this.MarcaEmEdicao = marca;
     },
-
+  // Deleta cliente pelo ID e remove da lista local
     deletarCliente(id) {
       axios
         .delete(`http://127.0.0.1:8000/api/clientes/deletar/${id}`)
@@ -705,7 +718,7 @@ export default {
           console.error("Erro ao deletar:", err);
         });
     },
-
+  // Deleta produto pelo ID e remove da lista local
     deletarProduto(id) {
       axios
         .delete(`http://127.0.0.1:8000/api/produtos/deletar/${id}`)
@@ -718,6 +731,7 @@ export default {
         });
     },
 
+    // Deleta marca pelo ID e remove da lista local
     deletarMarca(id) {
       axios
         .delete(`http://127.0.0.1:8000/api/marcas/deletar/${id}`)
